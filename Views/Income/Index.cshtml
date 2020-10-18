@@ -1,0 +1,67 @@
+﻿@model IEnumerable<ExpenseTracker.Models.Income>
+
+@{
+    ViewBag.Title = "Index";
+}
+<style>
+    #tabledesign {
+        font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+        #tabledesign td, #tabledesign th {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        #tabledesign tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+
+        #tabledesign th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: left;
+            background-color: #FFA07A;
+            color: black;
+        }
+
+</style>
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Add Income", "Create", "Income", "", new { @class = "btn btn-default btn-sm btn-info" })
+    @Html.ActionLink("Income vs Expense","Compare","Income","",new { @class = "btn btn-default btn-sm btn-warning"})
+</p>
+<table class="table"  id="tabledesign">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.IncomeMoney)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.IncomeDate)
+        </th>
+        <th>
+            <p>Action</p>
+        </th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.IncomeMoney)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.IncomeDate)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.S_no },new { @class="btn btn-sm btn-success"}) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.S_no },new { @class = "btn btn-sm btn-danger" })
+        </td>
+    </tr>
+}
+
+</table>

@@ -1,0 +1,19 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+    <h1>Personal Expense Tracker</h1>
+    <p class="lead">Manage your expenses here!</p>
+   
+</div>
+
+<div class="row">
+   
+    <div class="col-md-6">
+        @Html.ActionLink("UpdateIncome", "Index", "Income", null, new { @class = "btn btn-primary" })
+    </div>
+    <div class="col-md-6">
+        @Html.ActionLink("ManageExpense", "Index", "ExpenseReport", null, new { @class = "btn btn-primary" })
+    </div>
+</div>

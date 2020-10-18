@@ -1,0 +1,89 @@
+﻿<!--<script src="https://code.highcharts.com/highcharts.js"></script>-->
+<script src="~/Scripts/highcharts/highcharts.js"></script>
+<script src="~/Scripts/highcharts/exporting.js"></script>
+<script src="~/Scripts/highcharts/accessibility.js"></script>
+<script src="~/Scripts/highcharts/export-data.js"></script>
+<script src="~/Scripts/jquery-3.3.1.min.js"></script>
+<h3>Income vs Expense</h3>
+<button id="btnIncomeVsExpense" class="btn btn-info">Get report</button>
+<br/>
+<br/>
+<div id="container1" style="min-width: 400px; height: 400px; margin: 0 auto">
+
+</div>
+<script>
+    $(document).ready(function () {
+        $("#btnIncomeVsExpense").click(function () {
+            var titleMessage = "Expenses in last four weeks is : ";
+
+            $.ajax({
+                type: "POST",
+                url: "/Income/GetComparisonList",
+                contentType: "application/json",
+                dataType: "json",
+                success: function (result) {
+                    // var keys = Object.keys(result);
+                    var datas = new Array();
+                    var totalspent = 0.0;
+                    for (var i = 0; i < result.length; i++) {
+                        datas.push(result[i]);
+                    }
+                    //createCharts1(weeklydata);
+                    Highcharts.chart('container1', {
+                        chart: {
+                            type: 'column'
+                        },
+                        title: {
+                            text: 'Monthwise Income vs Expense'
+                        },
+                        xAxis: {
+                            categories: [
+                                'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+                            ],
+                            crosshair: true
+                        },
+                        yAxis: {
+                            min: 0,
+                            title: {
+                                text: 'Amount'
+                            }
+                        },
+                        tooltip: {
+                            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                                '<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
+                            footerFormat: '</table>',
+                            shared: true,
+                            useHTML: true
+                        },
+                        plotOptions: {
+                            column: {
+                                pointPadding: 0.2,
+                                borderWidth: 0
+                            }
+                        },
+                        series: [{
+                            name: 'Income',
+                            data: datas[0]
+
+                        }, {
+                            name: 'Expense',
+                            data: datas[1]
+
+                        }]
+                    });
+                }
+            })
+        })
+    })
+</script>
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+
+

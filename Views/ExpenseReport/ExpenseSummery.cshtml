@@ -1,0 +1,186 @@
+﻿<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="~/Scripts/highcharts/highcharts.js"></script>
+<script src="~/Scripts/highcharts/export-data.js"></script>
+<script src="~/Scripts/highcharts/exporting.js"></script>
+<script src="~/Scripts/highcharts/accessibility.js"></script>
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+<script src="~/Scripts/jquery-3.3.1.min.js"></script>
+<h4>Reports</h4>
+<button id="btnMonthlyReport" class="btn btn-info">Monthly Report</button>
+<button id="btnYearlyReport" class="btn btn-warning">Yearly Report</button>
+
+<br />
+<br />
+@if (ViewBag.b == 1)
+{
+    <div class="alert alert-warning alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        <strong>WARNING!!!</strong>you have spent too much on
+        @if (ViewBag.len == 1)
+        {
+            @ViewBag.item[0]
+        }
+        else
+        {
+            for (int i = 0; i < ViewBag.len - 1; i++)
+            {
+                @ViewBag.item[i]<span>,</span>
+            }
+            <span>and @ViewBag.item[ViewBag.len - 1]</span>
+        }
+
+    </div>
+}
+
+
+<div id="container" style="min-width: 400px; height: 400px; margin: 0 auto">
+
+</div>
+
+
+<script>
+
+
+    $(document).ready(function () {
+        function createCharts1(datas) {
+            Highcharts.chart('container', {
+                chart: {
+                    type: 'line'
+                },
+                title: {
+                    text: 'Expenditure across the year'
+                },
+
+                xAxis: {
+                    categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                },
+                yAxis: {
+                    title: {
+                        text: 'Amount Spent'
+                    }
+                },
+                plotOptions: {
+                    line: {
+                        dataLabels: {
+                            enabled: true
+                        },
+                        enableMouseTracking: false
+                    }
+                },
+                series: [{
+                    name: 'Food',
+                    data: datas[0]
+                }, {
+                    name: 'Shopping',
+                    data: datas[1]
+                }, {
+                    name: 'Travel',
+                    data: datas[2]
+                }, {
+                    name: 'Health',
+                    data: datas[3]
+                }, {
+                    name: 'Utility bills and rent',
+                    data: datas[4]
+                }, {
+                    name: 'Education',
+                    data: datas[5]
+                }]
+            });
+        }
+        $("#btnYearlyReport").click(function () {
+            var titleMessage = "Expenses in last four weeks is : ";
+
+            $.ajax({
+                type: "POST",
+                url: "/ExpenseReport/GetYearlyExpense",
+                contentType: "application/json",
+                dataType: "json",
+                success: function (result) {
+                    // var keys = Object.keys(result);
+                    var weeklydata = new Array();
+                    var totalspent = 0.0;
+                    for (var i = 0; i < result.length; i++) {
+                        weeklydata.push(result[i]);
+                    }
+                    createCharts1(weeklydata);
+                }
+            })
+        })
+
+        $("#btnMonthlyReport").click(function () {
+            var titleMessage = "Expenses in this month is : ";
+
+            $.ajax({
+                type: "GET",
+                url: "/ExpenseReport/GetMonthlyExpense",
+                contentType: "application/json",
+                dataType: "json",
+                success: function (result) {
+                    var keys = Object.keys(result);
+                    var monthlydata = new Array();
+                    var totalspent = 0.0;
+                    for (var i = 0; i < keys.length; i++) {
+                        var arrL = new Array();
+                        arrL.push(keys[i]);
+                        arrL.push(result[keys[i]]);
+                        totalspent += result[keys[i]];
+                        monthlydata.push(arrL);
+                    }
+                    
+                    createCharts(monthlydata, titleMessage, totalspent.toFixed(2));
+                }
+            })
+        })
+    })
+
+    function createCharts(sum, titleText, totalspent) {
+        Highcharts.chart('container', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: titleText + ' ' + totalspent
+            },
+            xAxis: {
+                type: 'category',
+                labels: {
+                    rotation: -45,
+                    style: {
+                        fontSize: '13px',
+                        fontFamily: 'Verdana, sans-serif'
+                    }
+                }
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Money spent'
+                }
+            },
+            legend: {
+                enabled: false
+            },
+            tooltip: {
+                pointFormat: 'Total money spent: <b>{point.y:.2f} </b>'
+            },
+            series: [{
+                type: 'column',
+                data: sum,
+            }]
+        });
+    }
+   
+
+
+</script>
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
